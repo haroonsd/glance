@@ -4,6 +4,7 @@ import { Toaster } from 'sonner'
 import { useAuthStore } from './store/auth'
 import { LoginPage } from './pages/LoginPage'
 import { DashboardPage } from './pages/DashboardPage'
+import { TasksPage } from './pages/TasksPage'
 import { PageLoader } from './components/PageLoader'
 
 function ProtectedRoute({ children }) {
@@ -30,7 +31,7 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
         <Route path="/" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-        <Route path="/tasks" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+        <Route path="/tasks" element={<ProtectedRoute><TasksPage /></ProtectedRoute>} />
         <Route path="/inbox" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
         <Route path="/projects" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
         <Route path="/team" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />

@@ -120,8 +120,7 @@ export function Sidebar({ collapsed, onToggle }) {
         </button>
 
         {/* User */}
-        <div className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[var(--color-surface-2)] transition-all cursor-pointer" onClick={handleSignOut}>
-          <div
+<div className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[var(--color-surface-2)] transition-all cursor-pointer" onClick={() => navigate('/settings')}>          <div
             className="w-7 h-7 rounded-full shrink-0 flex items-center justify-center text-xs font-bold text-white"
             style={{ background: stringToColor(profile?.name) }}
           >
