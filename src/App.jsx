@@ -5,6 +5,11 @@ import { useAuthStore } from './store/auth'
 import { LoginPage } from './pages/LoginPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { TasksPage } from './pages/TasksPage'
+import { BoardPage } from './pages/BoardPage'
+import { ProjectsPage } from './pages/ProjectsPage'
+import { TeamPage } from './pages/TeamPage'
+import { LivePage } from './pages/LivePage'
+import { SettingsPage } from './pages/SettingsPage'
 import { PageLoader } from './components/PageLoader'
 
 function ProtectedRoute({ children }) {
@@ -32,10 +37,11 @@ export default function App() {
         <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
         <Route path="/" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
         <Route path="/tasks" element={<ProtectedRoute><TasksPage /></ProtectedRoute>} />
-        <Route path="/inbox" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-        <Route path="/projects" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-        <Route path="/team" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-        <Route path="/settings" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+        <Route path="/board" element={<ProtectedRoute><BoardPage /></ProtectedRoute>} />
+        <Route path="/projects" element={<ProtectedRoute><ProjectsPage /></ProtectedRoute>} />
+        <Route path="/team" element={<ProtectedRoute><TeamPage /></ProtectedRoute>} />
+        <Route path="/live" element={<ProtectedRoute><LivePage /></ProtectedRoute>} />
+        <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

@@ -8,8 +8,8 @@ export const useTaskStore = create((set, get) => ({
 
   fetchTasks: async (projectId) => {
     set({ loading: true })
-    const query = supabase.from('tasks').select('*').eq('deleted', false).order('created_at', { ascending: true })
-    if (projectId) query.eq('project_id', projectId)
+    let query = supabase.from('tasks').select('*').eq('deleted', false).order('created_at', { ascending: true })
+    if (projectId) query = query.eq('project_id', projectId)
     const { data, error } = await query
     if (!error) set({ tasks: data || [] })
     set({ loading: false })
@@ -47,10 +47,11 @@ export const useTaskStore = create((set, get) => ({
   },
 
   subscribeToTasks: () => {
-    const channel = supabase.channel('tasks-realtime')
+    const channel = supabase
+      .channel('tasks-realtime')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, (payload) => {
         const { eventType, new: newRow, old: oldRow } = payload
-        if (eventType === 'INSERT') set((s) => ({ tasks: [...s.tasks, newRow] }))
+        if (eventType === 'INSERT') set((s) => ({ tasks: [...s.tasks.filter(t => t.id !== newRow.id), newRow] }))
         if (eventType === 'UPDATE') set((s) => ({ tasks: s.tasks.map((t) => t.id === newRow.id ? newRow : t) }))
         if (eventType === 'DELETE') set((s) => ({ tasks: s.tasks.filter((t) => t.id !== oldRow.id) }))
       })

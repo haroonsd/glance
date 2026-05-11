@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Plus, Circle, ChevronDown, Calendar, User, Flag, Trash2, MoreHorizontal, Loader2 } from 'lucide-react'
+import { Plus, Circle, Flag, Trash2, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { AppLayout } from '../components/AppLayout'
 import { useTaskStore } from '../store/tasks'
 import { useAuthStore } from '../store/auth'
-import { cn, getInitials, stringToColor, formatRelativeTime } from '../lib/utils'
+import { cn } from '../lib/utils'
 
 const STATUSES = [
   { value: 'todo', label: 'To Do', color: '#71717a' },
@@ -25,21 +25,23 @@ function StatusBadge({ value, onChange }) {
   const status = STATUSES.find(s => s.value === value) || STATUSES[0]
   return (
     <div className="relative">
-      <button onClick={() => setOpen(!open)} className="flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium transition-colors hover:bg-[var(--color-surface-3)]" style={{ color: status.color }}>
-        <Circle className="w-2 h-2 fill-current" />
-        {status.label}
+      <button onClick={() => setOpen(!open)} className="flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium hover:bg-[var(--color-surface-3)] transition-colors" style={{ color: status.color }}>
+        <Circle className="w-2 h-2 fill-current" />{status.label}
       </button>
       <AnimatePresence>
         {open && (
-          <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 4 }}
-            className="absolute top-full left-0 mt-1 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg shadow-xl z-50 overflow-hidden min-w-32">
-            {STATUSES.map(s => (
-              <button key={s.value} onClick={() => { onChange(s.value); setOpen(false) }}
-                className="w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-[var(--color-surface-3)] transition-colors" style={{ color: s.color }}>
-                <Circle className="w-2 h-2 fill-current" />{s.label}
-              </button>
-            ))}
-          </motion.div>
+          <>
+            <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+            <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 4 }}
+              className="absolute top-full left-0 mt-1 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg shadow-xl z-50 overflow-hidden min-w-32">
+              {STATUSES.map(s => (
+                <button key={s.value} onClick={() => { onChange(s.value); setOpen(false) }}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-[var(--color-surface-3)] transition-colors" style={{ color: s.color }}>
+                  <Circle className="w-2 h-2 fill-current" />{s.label}
+                </button>
+              ))}
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </div>
@@ -51,20 +53,23 @@ function PriorityBadge({ value, onChange }) {
   const priority = PRIORITIES.find(p => p.value === value) || PRIORITIES[0]
   return (
     <div className="relative">
-      <button onClick={() => setOpen(!open)} className="flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium transition-colors hover:bg-[var(--color-surface-3)]" style={{ color: priority.color }}>
+      <button onClick={() => setOpen(!open)} className="flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium hover:bg-[var(--color-surface-3)] transition-colors" style={{ color: priority.color }}>
         <Flag className="w-3 h-3" />{priority.label}
       </button>
       <AnimatePresence>
         {open && (
-          <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 4 }}
-            className="absolute top-full left-0 mt-1 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg shadow-xl z-50 overflow-hidden min-w-28">
-            {PRIORITIES.map(p => (
-              <button key={p.value} onClick={() => { onChange(p.value); setOpen(false) }}
-                className="w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-[var(--color-surface-3)] transition-colors" style={{ color: p.color }}>
-                <Flag className="w-3 h-3" />{p.label}
-              </button>
-            ))}
-          </motion.div>
+          <>
+            <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+            <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 4 }}
+              className="absolute top-full left-0 mt-1 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg shadow-xl z-50 overflow-hidden min-w-28">
+              {PRIORITIES.map(p => (
+                <button key={p.value} onClick={() => { onChange(p.value); setOpen(false) }}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-[var(--color-surface-3)] transition-colors" style={{ color: p.color }}>
+                  <Flag className="w-3 h-3" />{p.label}
+                </button>
+              ))}
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </div>
@@ -82,51 +87,32 @@ function TaskRow({ task, onUpdate, onDelete }) {
   }
 
   return (
-    <motion.tr
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -8 }}
-      className="group border-b border-[var(--color-border)] hover:bg-[var(--color-surface-2)] transition-colors"
-    >
-      {/* Task name */}
-      <td className="px-4 py-2.5 w-full">
+    <motion.tr initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+      className="group border-b border-[var(--color-border)] hover:bg-[var(--color-surface-2)] transition-colors">
+      <td className="px-4 py-2.5">
         {editing ? (
-          <input
-            autoFocus
-            value={name}
-            onChange={e => setName(e.target.value)}
+          <input autoFocus value={name} onChange={e => setName(e.target.value)}
             onBlur={handleNameBlur}
             onKeyDown={e => { if (e.key === 'Enter') handleNameBlur(); if (e.key === 'Escape') { setName(task.name); setEditing(false) } }}
-            className="w-full bg-transparent text-sm text-[var(--color-text)] focus:outline-none border-b border-[var(--color-accent)]"
-          />
+            className="w-full bg-transparent text-sm text-[var(--color-text)] focus:outline-none border-b border-[var(--color-accent)]" />
         ) : (
-          <span onClick={() => setEditing(true)} className={cn('text-sm cursor-text', task.status === 'done' ? 'line-through text-[var(--color-text-3)]' : 'text-[var(--color-text)]')}>
+          <span onClick={() => setEditing(true)}
+            className={cn('text-sm cursor-text select-none', task.status === 'done' ? 'line-through text-[var(--color-text-3)]' : 'text-[var(--color-text)]')}>
             {task.name}
           </span>
         )}
       </td>
-
-      {/* Status */}
       <td className="px-2 py-2.5 whitespace-nowrap">
         <StatusBadge value={task.status} onChange={v => onUpdate(task.id, { status: v })} />
       </td>
-
-      {/* Priority */}
       <td className="px-2 py-2.5 whitespace-nowrap">
         <PriorityBadge value={task.priority} onChange={v => onUpdate(task.id, { priority: v })} />
       </td>
-
-      {/* Due date */}
       <td className="px-2 py-2.5 whitespace-nowrap">
-        <input
-          type="date"
-          value={task.due_date || ''}
+        <input type="date" value={task.due_date || ''}
           onChange={e => onUpdate(task.id, { due_date: e.target.value || null })}
-          className="text-xs text-[var(--color-text-2)] bg-transparent border-0 cursor-pointer hover:text-[var(--color-text)] focus:outline-none"
-        />
+          className="text-xs text-[var(--color-text-2)] bg-transparent border-0 cursor-pointer hover:text-[var(--color-text)] focus:outline-none" />
       </td>
-
-      {/* Delete */}
       <td className="px-2 py-2.5">
         <button onClick={() => onDelete(task.id)}
           className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-[var(--color-danger)]/20 text-[var(--color-text-3)] hover:text-[var(--color-danger)] transition-all">
@@ -153,17 +139,10 @@ export function TasksPage() {
     if (!newTaskName.trim()) return
     setAdding(true)
     try {
-      await addTask({
-        name: newTaskName.trim(),
-        status: 'todo',
-        priority: 'medium',
-        due_date: null,
-        project_id: 'proj-1',
-        deleted: false,
-      })
+      await addTask({ name: newTaskName.trim(), status: 'todo', priority: 'medium', due_date: null, project_id: 'proj-1', deleted: false })
       setNewTaskName('')
     } catch (err) {
-      toast.error('Failed to add task')
+      toast.error('Failed to add task: ' + err.message)
     } finally {
       setAdding(false)
     }
@@ -171,7 +150,7 @@ export function TasksPage() {
 
   const handleUpdate = async (id, updates) => {
     try { await updateTask(id, updates) }
-    catch { toast.error('Failed to update task') }
+    catch (err) { toast.error('Failed to update: ' + err.message) }
   }
 
   const handleDelete = async (id) => {
@@ -182,15 +161,12 @@ export function TasksPage() {
   return (
     <AppLayout>
       <div className="flex flex-col h-full">
-        {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--color-border)]">
           <div>
             <h1 className="text-xl font-semibold">My Tasks</h1>
-            <p className="text-sm text-[var(--color-text-3)]">{tasks.length} tasks</p>
+            <p className="text-sm text-[var(--color-text-3)]">{tasks.length} task{tasks.length !== 1 ? 's' : ''}</p>
           </div>
         </div>
-
-        {/* Table */}
         <div className="flex-1 overflow-auto px-6 py-4">
           {loading ? (
             <div className="flex items-center justify-center h-40">
@@ -200,11 +176,11 @@ export function TasksPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-[var(--color-border)]">
-                  <th className="text-left px-4 py-2 text-xs font-medium text-[var(--color-text-3)] uppercase tracking-wider">Task</th>
-                  <th className="text-left px-2 py-2 text-xs font-medium text-[var(--color-text-3)] uppercase tracking-wider">Status</th>
-                  <th className="text-left px-2 py-2 text-xs font-medium text-[var(--color-text-3)] uppercase tracking-wider">Priority</th>
-                  <th className="text-left px-2 py-2 text-xs font-medium text-[var(--color-text-3)] uppercase tracking-wider">Due Date</th>
-                  <th className="px-2 py-2"></th>
+                  <th className="text-left px-4 py-2 text-xs font-medium text-[var(--color-text-3)] uppercase tracking-wider w-full">Task</th>
+                  <th className="text-left px-2 py-2 text-xs font-medium text-[var(--color-text-3)] uppercase tracking-wider whitespace-nowrap">Status</th>
+                  <th className="text-left px-2 py-2 text-xs font-medium text-[var(--color-text-3)] uppercase tracking-wider whitespace-nowrap">Priority</th>
+                  <th className="text-left px-2 py-2 text-xs font-medium text-[var(--color-text-3)] uppercase tracking-wider whitespace-nowrap">Due Date</th>
+                  <th className="px-2 py-2 w-8"></th>
                 </tr>
               </thead>
               <tbody>
@@ -216,20 +192,15 @@ export function TasksPage() {
               </tbody>
             </table>
           )}
-
-          {/* Add task row */}
-          <div className="flex items-center gap-2 mt-3 px-4">
-            <Plus className="w-4 h-4 text-[var(--color-text-3)]" />
-            <input
-              value={newTaskName}
-              onChange={e => setNewTaskName(e.target.value)}
+          <div className="flex items-center gap-2 mt-3 px-4 border-t border-[var(--color-border)] pt-3">
+            <Plus className="w-4 h-4 text-[var(--color-text-3)] shrink-0" />
+            <input value={newTaskName} onChange={e => setNewTaskName(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') handleAddTask() }}
-              placeholder="Add a task..."
-              className="flex-1 bg-transparent text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-4)] focus:outline-none py-2"
-            />
+              placeholder="Add a task... (press Enter)"
+              className="flex-1 bg-transparent text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-4)] focus:outline-none py-2" />
             {newTaskName && (
               <button onClick={handleAddTask} disabled={adding}
-                className="text-xs px-3 py-1.5 rounded-lg bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-3)] transition-colors">
+                className="text-xs px-3 py-1.5 rounded-lg bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-3)] transition-colors flex items-center gap-1">
                 {adding ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Add'}
               </button>
             )}
