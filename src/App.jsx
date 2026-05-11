@@ -30,6 +30,11 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
         <Route path="/" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+        <Route path="/tasks" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+        <Route path="/inbox" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+        <Route path="/projects" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+        <Route path="/team" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+        <Route path="/settings" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
