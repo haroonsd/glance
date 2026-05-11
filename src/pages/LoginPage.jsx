@@ -13,7 +13,7 @@ export function LoginPage() {
   const { signIn, signUp } = useAuthStore()
   const [mode, setMode] = useState('signin')
   const [loading, setLoading] = useState(false)
-  const [form, setForm] = useState({ email: '', password: '', name: '' })
+  const [form, setForm] = useState({ email: '', password: '', confirmPassword: '', name: '' })
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -25,12 +25,19 @@ export function LoginPage() {
         navigate('/')
       } else {
         if (form.password.length < 8) { toast.error('Password must be at least 8 characters'); setLoading(false); return }
+        if (form.password !== form.confirmPassword) { toast.error('Passwords do not match'); setLoading(false); return }
         await signUp({ email: form.email, password: form.password, name: form.name })
         toast.success('Account created! Check your email to verify.')
         setMode('signin')
       }
     } catch (err) {
-      toast.error(err.message || 'Something went wrong')
+      if (err.message?.toLowerCase().includes('already registered') || err.message?.toLowerCase().includes('already exists') || err.message?.toLowerCase().includes('user already')) {
+        toast.error('This email is already registered.', {
+          action: { label: 'Sign in instead', onClick: () => setMode('signin') }
+        })
+      } else {
+        toast.error(err.message || 'Something went wrong')
+      }
     } finally {
       setLoading(false)
     }
@@ -64,23 +71,32 @@ export function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <AnimatePresence mode="wait">
               {mode === 'signup' && (
-                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.2 }}>
+                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.2 }} className="space-y-4">
                   <Input label="Full name" icon={User} placeholder="John Doe" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
                 </motion.div>
               )}
             </AnimatePresence>
+
             <Input label="Email" icon={Mail} type="email" placeholder="you@company.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
             <Input label="Password" icon={Lock} type="password" placeholder="••••••••" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required />
-            {mode === 'signup' && (
-              <div className="text-xs text-[var(--color-text-3)] flex items-center gap-1.5">
-                <Sparkles className="w-3 h-3" /> Min 8 characters
-              </div>
-            )}
+
+            <AnimatePresence>
+              {mode === 'signup' && (
+                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.2 }} className="space-y-4">
+                  <Input label="Confirm password" icon={Lock} type="password" placeholder="••••••••" value={form.confirmPassword} onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })} required />
+                  <div className="text-xs text-[var(--color-text-3)] flex items-center gap-1.5">
+                    <Sparkles className="w-3 h-3" /> Min 8 characters
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             <Button type="submit" loading={loading} className="w-full" size="lg">
               {mode === 'signin' ? 'Sign in' : 'Create account'}
               <ArrowRight className="w-4 h-4" />
             </Button>
           </form>
+
           <div className="mt-6 pt-6 border-t border-[var(--color-border)] text-center">
             <button onClick={() => setMode(mode === 'signin' ? 'signup' : 'signin')} className="text-sm text-[var(--color-text-2)] hover:text-[var(--color-text)] transition-colors">
               {mode === 'signin' ? "Don't have an account? " : 'Already have an account? '}
