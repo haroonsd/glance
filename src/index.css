@@ -43,3 +43,24 @@ input, textarea, select, button { font-family: inherit; font-size: inherit; colo
 input:focus, textarea:focus { outline: none; }
 button { cursor: pointer; }
 button:disabled { cursor: not-allowed; opacity: 0.5; }
+
+/* Light mode */
+[data-theme="light"] {
+  --color-bg: #f8f9fc;
+  --color-surface: #ffffff;
+  --color-surface-2: #f1f3f9;
+  --color-surface-3: #e8ecf5;
+  --color-border: #e2e8f0;
+  --color-border-2: #cbd5e1;
+  --color-text: #0f172a;
+  --color-text-2: #475569;
+  --color-text-3: #94a3b8;
+  --color-text-4: #cbd5e1;
+  --color-accent: #4f46e5;
+  --color-accent-2: #4f46e5;
+  --color-accent-3: #3730a3;
+  --color-accent-glow: rgba(79, 70, 229, 0.1);
+  --color-success: #059669;
+  --color-warning: #d97706;
+  --color-danger: #dc2626;
+}
